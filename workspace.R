@@ -1,8 +1,17 @@
+library(tercen)
+library(dplyr)
 library(taipan)
 library(shiny)
 library(xfun)
 library(ggplot2)
 library(shinydashboard)
+
+options("tercen.workflowId" = "99c373fb7d567a159c2899479501db6e")
+options("tercen.stepId"     = "2097173c-2ebd-4111-a6ee-2826a478c182")
+
+getOption("tercen.workflowId")
+getOption("tercen.stepId")
+
 
 taipanQuestions <- function(scene, selection){
   structure(
@@ -13,7 +22,7 @@ taipanQuestions <- function(scene, selection){
 
 questions <- taipanQuestions(
   scene = div(radioButtons("Hotdog", label = "Hot dog ?",
-                             choices = list("Yes", "No"))),
+                           choices = list("Yes", "No"))),
   selection = div(
     radioButtons("hotdog", label = "Hotdog?",
                  choices = list("Hotdog", "Not hotdog")),
@@ -24,7 +33,7 @@ questions <- taipanQuestions(
 
 
 buildTaipan <- function(questions, images, appdir, launch = TRUE, overwrite = FALSE, skip_check = FALSE, ext_restricted = TRUE){
-#images <- tools::file_path_as_absolute(images)
+  #images <- tools::file_path_as_absolute(images)
   if(!inherits(questions, "taipanQuestions")){
     stop("Questions must be created using the taipanQuestions() function.")
   }
@@ -101,11 +110,15 @@ buildTaipan <- function(questions, images, appdir, launch = TRUE, overwrite = FA
 }
 
 
-buildTaipan(
-  questions = questions,
-  images = c("C:/Users/deepchand/Desktop/tercen/1.jpg",
-             "C:/Users/deepchand/Desktop/tercen/2.jpg"),
-  appdir = file.path(tempdir(), "taipan"), overwrite = TRUE
-)
+
+ctx <- tercenCtx()
+  ctx %>%
+  buildTaipan(
+    questions = questions,
+    images = c("https://raw.githubusercontent.com/DeepchandGudapati/sample/main/hotdog.jpg"),
+    appdir = file.path(tempdir(), "taipan"),overwrite = TRUE
+  ) %>%
+  ctx$addNamespace() %>%
+  ctx$save()
 
 
